@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' as services;
 import 'package:nastik_trip/shared/shared.dart';
 import 'package:image_picker/image_picker.dart';
 import 'article.service.dart';
@@ -77,14 +78,31 @@ class _ArticleEditorState extends State<ArticleEditor> {
           maxLines: 8,
         ),
         SizedBox(height: 8),
-        TextInput(
-          label: 'Описание',
-          onChange: (String value) {
-            _content = value;
-          },
-          value: _content,
-          minLines: 10,
-          maxLines: 20,
+        Stack(
+          children: <Widget>[
+            TextInput(
+              label: 'Описание',
+              onChange: (String value) {
+                _content = value;
+              },
+              value: _content,
+              minLines: 10,
+              maxLines: 200,
+            ),
+            Positioned(
+              left: 80,
+              top: 0,
+              child: InkWell(
+                onTap: () {
+                  _copy(_content);
+                },
+                child: Icon(
+                  Icons.content_copy,
+                  size: 16,
+                ),
+              ),
+            ),
+          ],
         ),
         SizedBox(height: 24),
         _images$(context),
@@ -240,5 +258,9 @@ class _ArticleEditorState extends State<ArticleEditor> {
         _images.add(imagePath);
       });
     }
+  }
+
+  void _copy(String text) {
+    services.Clipboard.setData(services.ClipboardData(text: text));
   }
 }
